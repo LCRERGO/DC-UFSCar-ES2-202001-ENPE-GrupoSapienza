@@ -68,7 +68,7 @@ public class GUIGlobals {
 
     //	Colors.
     public static final Color ENTRY_EDITOR_LABEL_COLOR = new Color(100, 100, 150); // Empty field, blue.
-    public static final Color ENTRY_EDITOR_INVALID_LABEL_COLOR = new Color(255, 0, 0, 255)
+    public static final Color ENTRY_EDITOR_INVALID_LABEL_COLOR = new Color(255, 0, 0, 255);
     public static final Color NULL_FIELD_COLOR = new Color(75, 130, 95); // Valid field, green.
     public static final Color ACTIVE_TABBED_COLOR = GUIGlobals.ENTRY_EDITOR_LABEL_COLOR.darker(); // active Database (JTabbedPane)
     public static final Color INACTIVE_TABBED_COLOR = Color.black; // inactive Database
