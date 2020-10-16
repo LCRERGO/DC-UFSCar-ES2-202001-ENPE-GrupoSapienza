@@ -60,7 +60,6 @@ import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.specialfields.SpecialFieldsUtils;
-import net.sf.jabref.validators.Validators;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -246,7 +245,7 @@ public class MainTable extends JTable {
         }
 
         else if (column == 0) {
-            if (isComplete(row) && isAllValid(row)) {
+            if (isComplete(row)) {
                 MainTable.compRenderer.setNumber(row);
                 int marking = isMarked(row);
                 if (marking > 0) {
@@ -279,18 +278,6 @@ public class MainTable extends JTable {
 
         return renderer;
 
-    }
-
-    public boolean isAllValid(int row) {
-        try {
-            BibEntry entry = getBibEntry(row);
-            String year = entry.getField("year");
-            String bibtexkey = entry.getField("bibtexkey");
-
-            return Validators.validateYear(year) && Validators.validateBibtexkey(bibtexkey);
-        } catch (NullPointerException ex) {
-            return false;
-        }
     }
 
     private void setWidths() {

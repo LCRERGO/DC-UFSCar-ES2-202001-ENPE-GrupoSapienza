@@ -98,7 +98,7 @@ public class TextField extends JTextField implements FieldEditor {
     @Override
     public void setLabelColor(Color color) {
         label.setForeground(color);
-        //        throw new NullPointerException("ok");
+        throw new NullPointerException("ok");
     }
 
     @Override

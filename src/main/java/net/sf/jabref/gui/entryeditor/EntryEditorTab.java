@@ -42,7 +42,6 @@ import net.sf.jabref.Globals;
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
 import net.sf.jabref.gui.fieldeditors.FieldEditor;
@@ -53,7 +52,6 @@ import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.gui.util.FocusRequester;
 import net.sf.jabref.logic.autocompleter.AutoCompleter;
 import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.validators.Validators;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -307,23 +305,15 @@ class EntryEditorTab {
         }
         FieldEditor fieldEditor = editors.get(field);
         // trying to preserve current edit position (fixes SF bug #1285)
-        if (fieldEditor.getTextComponent() instanceof JTextComponent) {
+        if(fieldEditor.getTextComponent() instanceof JTextComponent) {
             int initialCaretPosition = ((JTextComponent) fieldEditor).getCaretPosition();
             fieldEditor.setText(content);
             int textLength = fieldEditor.getText().length();
-            if (initialCaretPosition < textLength) {
+            if(initialCaretPosition<textLength) {
                 ((JTextComponent) fieldEditor).setCaretPosition(initialCaretPosition);
             } else {
                 ((JTextComponent) fieldEditor).setCaretPosition(textLength);
             }
-            if (field.equals("year") && !Validators.validateYear(content)) {
-                fieldEditor.setLabelColor(GUIGlobals.ENTRY_EDITOR_INVALID_LABEL_COLOR);
-            } else if (field.equals("bibtexkey") && !Validators.validateBibtexkey(content)) {
-                fieldEditor.setLabelColor(GUIGlobals.ENTRY_EDITOR_INVALID_LABEL_COLOR);
-            } else {
-                fieldEditor.setLabelColor(GUIGlobals.ENTRY_EDITOR_LABEL_COLOR);
-            }
-
         } else {
             fieldEditor.setText(content);
         }
@@ -335,19 +325,9 @@ class EntryEditorTab {
             FieldEditor ed = stringFieldEditorEntry.getValue();
             ed.updateFontColor();
             ed.setEnabled(true);
-
             if (((Component) ed).hasFocus()) {
                 ed.setActiveBackgroundColor();
             } else {
-                String field = ed.getFieldName();
-                String content = ed.getText();
-                if (field.equals("year") && !content.isEmpty() && !Validators.validateYear(content)) {
-                    ed.setLabelColor(new Color(255, 0, 0, 255));
-                } else if (field.equals("bibtexkey") && !content.isEmpty() && !Validators.validateBibtexkey(content)) {
-                    ed.setLabelColor(new Color(255, 0, 0, 255));
-                } else if (ed != null) {
-                    ed.setLabelColor(new Color(100, 100, 150));
-                }
                 ed.setValidBackgroundColor();
             }
         }
