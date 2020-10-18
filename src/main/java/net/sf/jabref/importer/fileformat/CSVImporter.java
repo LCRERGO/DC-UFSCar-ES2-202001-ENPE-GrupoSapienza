@@ -15,11 +15,14 @@
  */
 package net.sf.jabref.importer.fileformat;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import net.sf.jabref.importer.ImportFormatReader;
 import net.sf.jabref.importer.OutputPrinter;
 import net.sf.jabref.model.entry.BibEntry;
 
@@ -27,6 +30,8 @@ import net.sf.jabref.model.entry.BibEntry;
  * Importer for the CSV format.
  */
 public class CSVImporter extends ImportFormat {
+
+    private static final Pattern RECOGNIZED_FORMAT_PATTERN = Pattern.compile("BibliographyType,.*");
 
     /**
      * Return the name of this import format.
@@ -50,6 +55,15 @@ public class CSVImporter extends ImportFormat {
      */
     @Override
     public boolean isRecognizedFormat(InputStream stream) throws IOException {
+        // Our strategy is to look for the "BibliographyType,*" line.
+        try (BufferedReader in = new BufferedReader(ImportFormatReader.getReaderDefaultEncoding(stream))) {
+            String str;
+            while ((str = in.readLine()) != null) {
+                if (RECOGNIZED_FORMAT_PATTERN.matcher(str).find()) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
