@@ -18,8 +18,11 @@ package net.sf.jabref.importer.fileformat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.sf.jabref.importer.ImportFormatReader;
@@ -73,7 +76,54 @@ public class CSVImporter extends ImportFormat {
      */
     @Override
     public List<BibEntry> importEntries(InputStream stream, OutputPrinter status) throws IOException {
-        return Collections.emptyList();
+        List<BibEntry> bibEntries = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+
+        try (BufferedReader in = new BufferedReader(ImportFormatReader.getReaderDefaultEncoding(stream))) {
+            String str;
+            while ((str = in.readLine()) != null) {
+                sb.append(str + '\n');
+            }
+        }
+        String[] entries = sb.toString().split("\n");
+        String[] fields = entries[0].toString().split(","); // Field Names
+
+        Map<String, String> hm = new HashMap<>();
+        String[] entryTypes = {"", "book", "booklet", "proceedings", "", "inbook", "inproceedings", "article", "manual",
+                "phdthesis", "misc", "", "", "techreport", "unpublished"}; // OpenOffice values
+
+        for (int i = 1; i < entries.length; i++) {
+
+            hm.clear();
+            String[] values = entries[i].split(",");
+
+            if (values.length != fields.length) {
+                return Collections.emptyList();
+            }
+
+            String entryType = "misc";
+            try {
+                String type = entryTypes[Integer.parseInt(values[0])];
+                if (type != "") {
+                    entryType = type;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                entryType = "misc";
+            } catch (NumberFormatException e) {
+                return Collections.emptyList();
+            }
+
+            BibEntry bibEntry = new BibEntry(DEFAULT_BIBTEXENTRY_ID, entryType);
+
+            for (int j = 1; j < fields.length; j++) {
+                hm.put(fields[j], values[j].replace("\"", ""));
+            }
+
+            bibEntry.setField(hm);
+            bibEntries.add(bibEntry);
+        }
+
+        return bibEntries;
     }
 
 }
